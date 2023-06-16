@@ -1,6 +1,6 @@
-# RoboLigaUI
+# Monitor
 
-User interface to control games at the FRI robotics competition.
+User interface for game server and vizaulization of the game state. Developed for the robotics competition Robo liga FRI.
 
 ## Setup
 
@@ -12,7 +12,7 @@ To configure game parameters change the values in [config.json](./roboliga-ui/co
 
 ```javascript
 // note the following parameters
-name: "Robo liga Fri 2023: Rudnik", // name on the website's landing page
+name: "Robo liga FRI 2023: Rudnik", // name on the website's landing page
 robot_time: 25, // max fuel time of the robot
 field_key: "game_field" // needs to match the ID of the field that defines the entire arena
 ```
