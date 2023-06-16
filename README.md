@@ -1,6 +1,6 @@
 # Monitor
 
-User interface for game server and vizaulization of the game state. Developed for the robotics competition Robo liga FRI.
+A user interface for [game server](https://github.com/RoboLiga/igralni-streznik) and visualization of the game state. Developed for the robotics competition [Robo liga FRI](https://fri.uni-lj.si/sl/robo-liga-fri).
 
 ## Setup
 
