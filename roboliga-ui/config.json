@@ -2,10 +2,10 @@
   "name": "Robo liga Fri 2023: Rudnik",
   "field_key": "game_field",
   "field_colors":{
-    "blue_basket": "#90CAF9",
-    "red_basket": "#EF9A9A",
-    "charging_station_1": "#A5D6A7",
-    "charging_station_2": "#A5D6A7",
+    "blue_plastic": "#90CAF9",
+    "blue_glass": "#A5D6A7",
+    "red_plastic": "#EF9A9A",
+    "red_glass": "#A5D6A7",
     "box": "gray",
     "undefined": "gray"
   }

@@ -25,6 +25,14 @@ Start the development server on `http://localhost:3000`
 npm run dev
 ```
 
+when exposing, running
+
+```bash
+npm run dev -- --host
+```
+
+solves the problem of --host not working.
+
 ## Production
 
 Build the application for production:
