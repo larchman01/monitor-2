@@ -43,7 +43,7 @@ import MyCanvas from "~/components/gamePage/MyCanvas.vue";
 import {navigateTo} from "#app";
 
 const {gameId} = useRoute().params
-const {baseApiUrl} = useRuntimeConfig()
+const baseApiUrl = useRuntimeConfig().public.baseApiUrl
 
 let iterBlue = ref(0)
 let iterRed = ref(0)

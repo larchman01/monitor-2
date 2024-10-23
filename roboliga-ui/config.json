@@ -1,11 +1,11 @@
 {
-  "name": "Robo liga Fri 2023: Rudnik",
+  "name": "Robo liga Fri 2024: Plaža",
   "field_key": "game_field",
   "field_colors":{
-    "blue_plastic": "#90CAF9",
-    "blue_glass": "#A5D6A7",
-    "red_plastic": "#EF9A9A",
-    "red_glass": "#A5D6A7",
+    "blue_plastic": "#4180FF",
+    "blue_glass": "#5CE75C",
+    "red_plastic": "#D74C4C",
+    "red_glass": "#3B3B3B",
     "box": "gray",
     "undefined": "gray"
   }

@@ -49,7 +49,7 @@ import {useAuthStore} from "~/stores/auth";
 
 const {$promptPassword} = useNuxtApp()
 const auth = useAuthStore()
-const {baseApiUrl} = useRuntimeConfig()
+const baseApiUrl = useRuntimeConfig().public.baseApiUrl
 const props = defineProps(['game_on', 'game_paused', 'teamsId'])
 const {gameId} = useRoute().params
 let dialog = ref(false)

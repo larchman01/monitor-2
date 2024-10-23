@@ -34,7 +34,7 @@ import {useAuthStore} from "~/stores/auth";
 
 const {$promptPassword} = useNuxtApp()
 
-const {baseApiUrl} = useRuntimeConfig()
+const baseApiUrl = useRuntimeConfig().public.baseApiUrl
 const auth = useAuthStore()
 const props = defineProps(['gameId'])
 const emit = defineEmits(['gameDeleted'])

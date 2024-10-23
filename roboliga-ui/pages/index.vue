@@ -99,8 +99,7 @@ import config from "~/config.json"
 import {useAuthStore} from "~/stores/auth";
 import {useLazyFetch} from "#app";
 
-//const {baseApiUrl} = useRuntimeConfig()
-const { public: { baseApiUrl } } = useRuntimeConfig();
+const baseApiUrl = useRuntimeConfig().public.baseApiUrl
 let dialog = ref(false)
 const auth = useAuthStore()
 

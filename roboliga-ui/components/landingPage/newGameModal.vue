@@ -70,7 +70,7 @@
 <script setup>
 import {useAuthStore} from "~/stores/auth";
 
-const {baseApiUrl} = useRuntimeConfig()
+const baseApiUrl = useRuntimeConfig().public.baseApiUrl
 const auth = useAuthStore()
 const emit = defineEmits(['gameCreated', 'closeModal'])
 

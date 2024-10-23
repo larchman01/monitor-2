@@ -43,7 +43,7 @@
 import {useAuthStore} from "~/stores/auth";
 
 const {$promptPassword} = useNuxtApp()
-const {baseApiUrl} = useRuntimeConfig()
+const baseApiUrl = useRuntimeConfig().public.baseApiUrl
 const auth = useAuthStore()
 const {gameId} = useRoute().params
 const props = defineProps(['teamsId'])
