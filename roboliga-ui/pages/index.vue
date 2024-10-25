@@ -2,7 +2,7 @@
     <v-container class="text-center">
         <v-row justify="center" align="center">
             <v-col>
-                <img class="ma-auto" src="/Robo-liga-FRI-2023-logo-Dark.svg" alt="logo"/>
+                <img class="ma-auto" src="/Robo-liga-FRI-2024-logo.svg" alt="logo"/>
             </v-col>
         </v-row>
 
