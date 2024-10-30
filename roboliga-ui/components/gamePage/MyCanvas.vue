@@ -1,5 +1,5 @@
 <template>
-    <canvas ref="myCanvas" :width="size.w" :height="size.h"></canvas>
+    <canvas ref="myCanvas" :width="size.w" :height="size.h" @click="handleCanvasClick"></canvas>
     <slot></slot>
 </template>
 
@@ -86,7 +86,7 @@ function CanvasManager(w, h) {
         // Save the canvas context state, so we can restore it later
         context.save();
         // Set the cube color
-        context.fillStyle = config.field_colors.undefined;
+        context.fillStyle = cube.color || config.field_colors.undefined;
         // Translate the canvas context to the center of the cube
         context.translate(cube.position.x * scale, cube.position.y * scale);
         // Rotate the canvas context by the cube's direction in degrees
@@ -125,14 +125,11 @@ function CanvasManager(w, h) {
         // Restore the canvas context state
         context.restore();
     }
-
-
 }
 
 let manager = new CanvasManager(size.w, size.h);
 
 function draw() {
-
     manager.clearField()
 
     for (let key in props.gameState.fields) {
@@ -148,7 +145,38 @@ function draw() {
     for (let key in props.gameState.robots) {
         manager.drawRobot(key);
     }
+}
 
+function handleCanvasClick(event) {
+    const rect = myCanvas.value.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const scale = size.scale;
+
+    for (let key in props.gameState.objects) {
+        const cube = props.gameState.objects[key];
+        const cubeX = cube.position.x * scale;
+        const cubeY = cube.position.y * scale;
+        const halfSize = 50 * scale;
+
+        if (x >= cubeX - halfSize && x <= cubeX + halfSize && y >= cubeY - halfSize && y <= cubeY + halfSize) {
+            switch (cube.color) {
+                case 'red':
+                    cube.color = 'blue';
+                    break;
+                case 'blue':
+                    cube.color = 'green';
+                    break;
+                case 'green':
+                    cube.color = 'red';
+                    break;
+                default:
+                    cube.color = 'red';
+            }
+            draw();
+            break;
+        }
+    }
 }
 
 onMounted(() => {
@@ -158,10 +186,7 @@ onMounted(() => {
 onUpdated(() => {
     draw();
 });
-
-
 </script>
 
 <style scoped>
-
 </style>
