@@ -1,8 +1,15 @@
-import {defineStore} from "pinia";
+import { defineStore } from "pinia";
+
+function getLocalStorage() {
+    if (typeof window !== 'undefined' && window.localStorage) {
+        return window.localStorage;
+    }
+    return null;
+}
 
 export const useAuthStore = defineStore('authStore', {
     state: () => ({
-        games:{}
+        games: {}
     }),
     getters: {
         getPass: (state) => {
@@ -23,8 +30,10 @@ export const useAuthStore = defineStore('authStore', {
             this.games = Object.fromEntries(
                 Object.entries(this.games).filter(([key, value]) => !!currentGames && currentGames.includes(key))
             );
-
         }
     },
-    persist: true
-})
+    persist: {
+        key: 'authStore',
+        storage: getLocalStorage()
+    }
+});

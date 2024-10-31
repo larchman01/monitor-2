@@ -107,6 +107,13 @@ const {data: games, refresh, pending, error} = useLazyFetch(baseApiUrl + `/game/
     default: () => [],
     immediate: false,
 })
+
+watch(games, (newGames) => {
+    if (newGames.length > 0) {
+        auth.resetGameState(newGames)
+    }
+})
+
 refresh()
 
 const myGames = computed(() => {
@@ -116,9 +123,6 @@ const myGames = computed(() => {
 const otherGames = computed(() => {
     return games.value.filter(g => !auth.getMyGames.includes(g)) || []
 })
-
-auth.resetGameState(games.value)
-
 
 </script>
 
