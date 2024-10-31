@@ -33,9 +33,9 @@
             </v-col>
         </v-row>
 
-        {{pending}}
+        <!-- {{pending}}
         {{error}}
-        {{games}}
+        {{games}} -->
 
         <v-row v-if="pending" justify="center" align="center">
             <v-col cols="4" class="text-button text-grey-lighten-1 myFont">

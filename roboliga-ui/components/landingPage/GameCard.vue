@@ -1,21 +1,17 @@
 <template>
     <v-card :to="`/game/${gameId}`" color="secondary" class="myFont">
         <v-card-title class="pa-0">
-
             <v-toolbar color="secondary" density="compact" class="ma-0">
-
                 <v-toolbar-title class="text-h6 ma-0">
                     {{ gameId }}
                 </v-toolbar-title>
-
                 <v-btn style="position: absolute; right: 0;" icon="mdi-delete-forever-outline" variant="text"
                        density="compact" color="grey-darken-2" @click.prevent="deleteCard"></v-btn>
-
             </v-toolbar>
         </v-card-title>
-        <v-card-text>
-            <div class="text-blue-darken-1">{{ gameState.teams[teamBlueId].name }}</div>
-            <div class="text-red-darken-1">{{ gameState.teams[teamRedId].name }}</div>
+        <v-card-text v-if="gameState && gameState.teams">
+            <div class="text-blue-darken-1">{{ gameState.teams[teamBlueId]?.name }}</div>
+            <div class="text-red-darken-1">{{ gameState.teams[teamRedId]?.name }}</div>
         </v-card-text>
     </v-card>
 
@@ -25,7 +21,6 @@
             :color="snackbarColor">
         {{ snackbarText }}
     </v-snackbar>
-
 </template>
 
 <script setup>
@@ -39,23 +34,37 @@ const auth = useAuthStore()
 const props = defineProps(['gameId'])
 const emit = defineEmits(['gameDeleted'])
 
-
-const {data: gameState,} = await useFetch(baseApiUrl + `/game/${props.gameId}`, {
-    method: 'GET',
-    pick: ["teams"]
-})
-
-
-const teams = gameState.value.teams
-const teamBlueId = Object.values(teams).find(t => t.color === 'blue').id
-const teamRedId = Object.values(teams).find(t => t.color === 'red').id
-
 const snackbar = ref(false)
 const snackbarText = ref("")
 const snackbarColor = ref("")
 
-const deleteCard = async () => {
+let gameState = ref(null)
+let teamBlueId = ref(null)
+let teamRedId = ref(null)
 
+const fetchGameState = async () => {
+    const {data, error} = await useFetch(baseApiUrl + `/game/${props.gameId}`, {
+        method: 'GET',
+        pick: ["teams"]
+    })
+
+    if (error.value) {
+        snackbar.value = true
+        snackbarText.value = "Failed to fetch game state"
+        snackbarColor.value = "error"
+        return
+    }
+
+    gameState.value = data.value
+
+    if (gameState.value && gameState.value.teams) {
+        const teams = gameState.value.teams
+        teamBlueId.value = Object.values(teams).find(t => t.color === 'blue')?.id
+        teamRedId.value = Object.values(teams).find(t => t.color === 'red')?.id
+    }
+}
+
+const deleteCard = async () => {
     const {data, error} = await useFetch(baseApiUrl + `/game/`, {
         method: 'delete',
         headers: {
@@ -65,28 +74,32 @@ const deleteCard = async () => {
     })
 
     if (error.value) {
-        if (error.value.status === 401) {
-
+        const errorMessage = error.value.message || error.value.toString()
+        const statusMatch = errorMessage.match(/: (\d{3}) /)
+        const status = statusMatch ? parseInt(statusMatch[1], 10) : null
+        if (status === 401) {
+            console.log("Calling $promptPassword")
             $promptPassword(props.gameId)
-
         } else {
             snackbar.value = true
             snackbarText.value = error.value
             snackbarColor.value = "error"
         }
+        return
     }
 
     if (data.value) {
         snackbar.value = true
         snackbarText.value = "Game deleted successfully"
         snackbarColor.value = ""
-
         emit('gameDeleted')
     }
 }
 
+onMounted(() => {
+    fetchGameState()
+})
 </script>
 
 <style scoped>
-
 </style>

@@ -15,6 +15,8 @@ let size = reactive({
     scale: 1
 })
 
+let cubeColors = reactive({});
+
 let setSize = () => {
     const maxW = props.gameState.fields.game_field.bottom_right.x
     const maxH = props.gameState.fields.game_field.bottom_right.y
@@ -86,13 +88,17 @@ function CanvasManager(w, h) {
         // Save the canvas context state, so we can restore it later
         context.save();
         // Set the cube color
-        context.fillStyle = cube.color || config.field_colors.undefined;
+        context.fillStyle = cubeColors[key] || config.field_colors.undefined;
         // Translate the canvas context to the center of the cube
         context.translate(cube.position.x * scale, cube.position.y * scale);
         // Rotate the canvas context by the cube's direction in degrees
         context.rotate(cube.dir * Math.PI / 180);
         // Draw the cube
-        context.fillRect(-50 * scale, -50 * scale, 100 * scale, 100 * scale);
+        context.fillRect(-75 * scale, -75 * scale, 150 * scale, 150 * scale);
+        // Draw the border around the cube
+        context.strokeStyle = 'black';
+        context.lineWidth = 1;
+        context.strokeRect(-75 * scale, -75 * scale, 150 * scale, 150 * scale);
         // Restore the canvas context state
         context.restore();
     }
@@ -149,34 +155,26 @@ function draw() {
 
 function handleCanvasClick(event) {
     const rect = myCanvas.value.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    const scale = size.scale;
+    const x = (event.clientX - rect.left) / size.scale;
+    const y = (event.clientY - rect.top) / size.scale;
 
     for (let key in props.gameState.objects) {
         const cube = props.gameState.objects[key];
-        const cubeX = cube.position.x * scale;
-        const cubeY = cube.position.y * scale;
-        const halfSize = 50 * scale;
-
-        if (x >= cubeX - halfSize && x <= cubeX + halfSize && y >= cubeY - halfSize && y <= cubeY + halfSize) {
-            switch (cube.color) {
-                case 'red':
-                    cube.color = 'blue';
-                    break;
-                case 'blue':
-                    cube.color = 'green';
-                    break;
-                case 'green':
-                    cube.color = 'red';
-                    break;
-                default:
-                    cube.color = 'red';
-            }
+        if (x >= cube.position.x - 50 && x <= cube.position.x + 50 &&
+            y >= cube.position.y - 50 && y <= cube.position.y + 50) {
+            toggleCubeColor(key);
             draw();
             break;
         }
     }
+}
+
+function toggleCubeColor(key) {
+    const colors = ['red', 'green', '#1565C0'];
+    const currentColor = cubeColors[key] || config.field_colors.undefined;
+    const currentIndex = colors.indexOf(currentColor);
+    const nextIndex = (currentIndex + 1) % colors.length;
+    cubeColors[key] = colors[nextIndex];
 }
 
 onMounted(() => {
