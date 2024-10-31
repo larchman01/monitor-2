@@ -17,6 +17,8 @@
 
                 <UpdateTime @snackBarEmit="openSnackbar"/>
 
+                <RevealPassword :teamsId="teamsId" @snackBarEmit="openSnackbar"/>
+
             </v-container>
         </v-card-text>
     </v-card>
@@ -46,6 +48,7 @@
 import UpdateTeams from "~/components/gamePage/editGame/UpdateTeams.vue";
 import UpdateScore from "~/components/gamePage/editGame/UpdateScore.vue";
 import UpdateTime from "~/components/gamePage/editGame/UpdateTime.vue";
+import RevealPassword from "./RevealPassword.vue";
 
 const emit = defineEmits(['closeModal'])
 defineProps(['teamsId'])
