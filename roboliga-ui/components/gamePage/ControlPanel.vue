@@ -68,7 +68,10 @@ const startStop = async () => {
         },
     });
     if (error.value) {
-        if (error.value.status === 401) {
+        const errorMessage = error.value.message || error.value.toString()
+        const statusMatch = errorMessage.match(/: (\d{3}) /)
+        const status = statusMatch ? parseInt(statusMatch[1], 10) : null
+        if (status === 401) {
 
             $promptPassword(gameId)
 
@@ -89,7 +92,10 @@ const playPause = async () => {
         },
     });
     if (error.value) {
-        if (error.value.status === 401) {
+        const errorMessage = error.value.message || error.value.toString()
+        const statusMatch = errorMessage.match(/: (\d{3}) /)
+        const status = statusMatch ? parseInt(statusMatch[1], 10) : null
+        if (status === 401) {
 
             $promptPassword(gameId)
 

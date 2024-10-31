@@ -49,7 +49,7 @@
             <!-- Games created by user -->
             <v-row>
                 <v-col class="text-h6 myFont">
-                    Created games
+                    Your games
                 </v-col>
                 <v-divider/>
             </v-row>
@@ -91,7 +91,6 @@
 
 
 <script setup>
-
 import NewGameModal from "~/components/landingPage/newGameModal.vue";
 import GameCard from "~/components/landingPage/GameCard.vue";
 
