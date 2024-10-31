@@ -38,30 +38,44 @@ const snackbar = ref(false)
 const snackbarText = ref("")
 const snackbarColor = ref("")
 
-let gameState = ref(null)
-let teamBlueId = ref(null)
-let teamRedId = ref(null)
+const gameState = ref(null)
+const teamBlueId = ref(null)
+const teamRedId = ref(null)
 
-const fetchGameState = async () => {
-    const {data, error} = await useFetch(baseApiUrl + `/game/${props.gameId}`, {
-        method: 'GET',
-        pick: ["teams"]
-    })
+const fetchGameState = async (retries = 5, delay = 1000) => {
+    for (let attempt = 1; attempt <= retries; attempt++) {
+        const {data, error} = await useFetch(baseApiUrl + `/game/${props.gameId}`, {
+            method: 'GET',
+            pick: ["teams"]
+        })
 
-    if (error.value) {
-        snackbar.value = true
-        snackbarText.value = "Failed to fetch game state"
-        snackbarColor.value = "error"
-        return
+        if (error.value) {
+            console.error("Error fetching game state:", error.value)
+            snackbar.value = true
+            snackbarText.value = "Failed to fetch game state"
+            snackbarColor.value = "error"
+            return
+        }
+
+        gameState.value = data.value
+
+        if (gameState.value) {
+            if (gameState.value.teams) {
+                const teams = gameState.value.teams
+                teamBlueId.value = Object.values(teams).find(t => t.color === 'blue')?.id
+                teamRedId.value = Object.values(teams).find(t => t.color === 'red')?.id
+            }
+            return
+        }
+
+        // Wait before retrying
+        await new Promise(resolve => setTimeout(resolve, delay))
     }
 
-    gameState.value = data.value
-
-    if (gameState.value && gameState.value.teams) {
-        const teams = gameState.value.teams
-        teamBlueId.value = Object.values(teams).find(t => t.color === 'blue')?.id
-        teamRedId.value = Object.values(teams).find(t => t.color === 'red')?.id
-    }
+    console.error("Failed to fetch game state after multiple attempts")
+    snackbar.value = true
+    snackbarText.value = "Failed to fetch game state after multiple attempts"
+    snackbarColor.value = "error"
 }
 
 const deleteCard = async () => {
@@ -78,7 +92,6 @@ const deleteCard = async () => {
         const statusMatch = errorMessage.match(/: (\d{3}) /)
         const status = statusMatch ? parseInt(statusMatch[1], 10) : null
         if (status === 401) {
-            console.log("Calling $promptPassword")
             $promptPassword(props.gameId)
         } else {
             snackbar.value = true
@@ -97,6 +110,10 @@ const deleteCard = async () => {
 }
 
 onMounted(() => {
+    fetchGameState()
+})
+
+watch(() => props.gameId, () => {
     fetchGameState()
 })
 </script>
