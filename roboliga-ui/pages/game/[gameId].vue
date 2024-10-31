@@ -6,7 +6,7 @@
                    color="primary" size="x-large" density="compact" :ripple="false" @click="navigateTo('/')"></v-btn>
 
             <ControlPanel :game_on="gameState.game_on" :game_paused="gameState.game_paused"
-                          :teamsId="[teamBlueId,teamRedId]"></ControlPanel>
+                          :teamsId="[teamBlueId,teamRedId]" :showCoordinates="showCoordinates" @update:showCoordinates="showCoordinates = $event"></ControlPanel>
         </v-row>
 
         <v-row justify="center" align="center" no-gutters>
@@ -27,7 +27,7 @@
         <v-row justify="center" align="center">
             <v-col cols="10">
                 <div ref="canvasDiv" class="text-center">
-                    <MyCanvas :gameState="gameState" :canvasWidth="canvasWidth"/>
+                    <MyCanvas :gameState="gameState" :canvasWidth="canvasWidth" :showCoordinates="showCoordinates"/>
                 </div>
             </v-col>
         </v-row>
@@ -128,6 +128,7 @@ const updateTeams = () => {
 
 const canvasDiv = ref(null)
 let canvasWidth = ref(600)
+let showCoordinates = ref(false)
 
 let intervalId;
 onMounted(() => {

@@ -3,7 +3,7 @@
         <v-row justify="center" align="center">
             <v-col cols="12" md="8">
                 <v-text-field
-                        :type="hover ? 'text' : 'password'"
+                        :type="computedType"
                         v-model="password"
                         label="Game Password"
                         variant="underlined"
@@ -11,11 +11,12 @@
                         :readonly="true"
                         @mouseover="hover = true"
                         @mouseleave="hover = false"
+                        @click="copyToClipboard"
                 ></v-text-field>
             </v-col>
             <v-col cols="12" md="4">
-                <v-btn color="primary" variant="text" @click="revealPassword">
-                    Reveal Password
+                <v-btn color="primary" variant="text" @click="togglePasswordVisibility">
+                    {{ isPasswordRevealed ? 'Hide Password' : 'Reveal Password' }}
                 </v-btn>
             </v-col>
         </v-row>
@@ -24,6 +25,7 @@
 
 <script setup>
 import { useAuthStore } from "~/stores/auth";
+import { ref, computed } from 'vue';
 
 const auth = useAuthStore();
 const { gameId } = useRoute().params;
@@ -32,11 +34,35 @@ const emit = defineEmits(['snackBarEmit']);
 const valid = ref(false);
 const inputForm = ref(null);
 const password = ref("");
+const isPasswordRevealed = ref(false);
 const hover = ref(false);
 
-async function revealPassword() {
-    password.value = auth.getPass(gameId);
-    emit('snackBarEmit', "Password revealed successfully", "");
+const computedType = computed(() => {
+    if (hover.value) {
+        return 'text';
+    }
+    return isPasswordRevealed.value ? 'password' : 'text';
+});
+
+async function togglePasswordVisibility() {
+    if (!isPasswordRevealed.value) {
+        password.value = auth.getPass(gameId);
+    } else {
+        password.value = "";
+    }
+    isPasswordRevealed.value = !isPasswordRevealed.value;
+}
+
+function copyToClipboard() {
+    if (password.value === "") {
+        emit('snackBarEmit', "Password is empty, nothing to copy", "");
+        return;
+    }
+    navigator.clipboard.writeText(password.value).then(() => {
+        emit('snackBarEmit', "Password copied to clipboard", "");
+    }).catch(err => {
+        emit('snackBarEmit', "Failed to copy password", "");
+    });
 }
 </script>
 

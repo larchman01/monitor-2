@@ -1,13 +1,17 @@
 <template>
-    <canvas ref="myCanvas" :width="size.w" :height="size.h" @click="handleCanvasClick"></canvas>
+    <canvas ref="myCanvas" :width="size.w" :height="size.h" @click="handleCanvasClick" @mousemove="handleMouseMove"></canvas>
+    <div v-if="showCoordinates && hoverCoordinates" class="coordinates" :style="{ top: hoverCoordinates.y + 'px', left: hoverCoordinates.x + 'px' }">
+        {{ hoverCoordinates.text }}
+    </div>
     <slot></slot>
 </template>
 
 <script setup>
-const props = defineProps(['gameState', 'canvasWidth'])
+const props = defineProps(['gameState', 'canvasWidth', 'showCoordinates'])
 import config from "~/config.json"
 
 const myCanvas = ref(null);
+const hoverCoordinates = ref(null);
 
 let size = reactive({
     w: 0,
@@ -177,6 +181,18 @@ function toggleCubeColor(key) {
     cubeColors[key] = colors[nextIndex];
 }
 
+function handleMouseMove(event) {
+    const rect = myCanvas.value.getBoundingClientRect();
+    const x = Math.round((event.clientX - rect.left) / size.scale);
+    const y = Math.round((event.clientY - rect.top) / size.scale);
+
+    hoverCoordinates.value = {
+        x: event.clientX,
+        y: event.clientY,
+        text: `X: ${x}, Y: ${y}`
+    };
+}
+
 onMounted(() => {
     manager.setContext(myCanvas.value.getContext('2d'));
     draw();
@@ -187,4 +203,9 @@ onUpdated(() => {
 </script>
 
 <style scoped>
+.coordinates {
+    position: absolute;
+    padding: 5px;
+    pointer-events: none;
+}
 </style>

@@ -8,7 +8,6 @@
             {{ game_paused ? 'Play' : 'Pause' }}
         </v-btn>
 
-
         <v-btn variant="text" color="primary">
             edit
             <v-dialog
@@ -16,12 +15,13 @@
                     activator="parent"
                     persistent
                     max-width="1000"
-
             >
-
                 <EditGameModal @closeModal="dialog=false" :teamsId="teamsId"/>
-
             </v-dialog>
+        </v-btn>
+
+        <v-btn @click="toggleCoordinates" variant="text" color="primary">
+            {{ showCoordinates ? 'Hide Coordinates' : 'Show Coordinates' }}
         </v-btn>
     </v-col>
 
@@ -36,7 +36,6 @@
                     color="white"
                     variant="text"
                     @click="snackbar = false">
-
                 Close
             </v-btn>
         </template>
@@ -50,7 +49,8 @@ import {useAuthStore} from "~/stores/auth";
 const {$promptPassword} = useNuxtApp()
 const auth = useAuthStore()
 const baseApiUrl = useRuntimeConfig().public.baseApiUrl
-const props = defineProps(['game_on', 'game_paused', 'teamsId'])
+const props = defineProps(['game_on', 'game_paused', 'teamsId', 'showCoordinates'])
+const emit = defineEmits(['update:showCoordinates'])
 const {gameId} = useRoute().params
 let dialog = ref(false)
 
@@ -72,14 +72,11 @@ const startStop = async () => {
         const statusMatch = errorMessage.match(/: (\d{3}) /)
         const status = statusMatch ? parseInt(statusMatch[1], 10) : null
         if (status === 401) {
-
             $promptPassword(gameId)
-
         } else {
             snackbar.value = true
             snackbarText.value = `Error ${props.game_on ? 'stopping' : 'starting'} the game`
         }
-
     }
 }
 
@@ -96,19 +93,18 @@ const playPause = async () => {
         const statusMatch = errorMessage.match(/: (\d{3}) /)
         const status = statusMatch ? parseInt(statusMatch[1], 10) : null
         if (status === 401) {
-
             $promptPassword(gameId)
-
         } else {
             snackbar.value = true
             snackbarText.value = `Error ${props.game_paused ? 'resuming' : 'pausing'} the game`
         }
-
     }
+}
 
+const toggleCoordinates = () => {
+    emit('update:showCoordinates', !props.showCoordinates);
 }
 </script>
 
 <style scoped>
-
 </style>
