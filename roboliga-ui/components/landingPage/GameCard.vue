@@ -6,7 +6,7 @@
                     {{ gameId }}
                 </v-toolbar-title>
                 <v-btn style="position: absolute; right: 0;" icon="mdi-delete-forever-outline" variant="text"
-                       density="compact" color="grey-darken-2" @click.prevent="deleteCard"></v-btn>
+                       density="compact" color="grey-darken-2" @click.prevent="openDeleteDialog"></v-btn>
             </v-toolbar>
         </v-card-title>
         <v-card-text v-if="gameState && gameState.teams">
@@ -21,6 +21,18 @@
             :color="snackbarColor">
         {{ snackbarText }}
     </v-snackbar>
+
+    <v-dialog v-model="deleteDialog" max-width="500">
+        <v-card>
+            <v-card-title class="headline">Confirm Deletion</v-card-title>
+            <v-card-text>Are you sure you want to delete the game?</v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="grey" text @click="deleteDialog = false">Cancel</v-btn>
+                <v-btn color="red" text @click="confirmDelete">Delete</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script setup>
@@ -37,6 +49,7 @@ const emit = defineEmits(['gameDeleted'])
 const snackbar = ref(false)
 const snackbarText = ref("")
 const snackbarColor = ref("")
+const deleteDialog = ref(false)
 
 const gameState = ref(null)
 const teamBlueId = ref(null)
@@ -78,7 +91,12 @@ const fetchGameState = async (retries = 5, delay = 1000) => {
     snackbarColor.value = "error"
 }
 
-const deleteCard = async () => {
+const openDeleteDialog = () => {
+    deleteDialog.value = true
+}
+
+const confirmDelete = async () => {
+    deleteDialog.value = false
     const {data, error} = await useFetch(baseApiUrl + `/game/`, {
         method: 'delete',
         headers: {

@@ -46,7 +46,12 @@ const computedType = computed(() => {
 
 async function togglePasswordVisibility() {
     if (!isPasswordRevealed.value) {
-        password.value = auth.getPass(gameId);
+        const pass = auth.getPass(gameId);
+        if (pass === 'no-pass') {
+            emit('snackBarEmit', "You aren't authorized to view the password", "");
+            return;
+        }
+        password.value = pass;
     } else {
         password.value = "";
     }
