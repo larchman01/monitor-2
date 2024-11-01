@@ -15,6 +15,8 @@
 
                 <UpdateScore :teamsId="teamsId" @snackBarEmit="openSnackbar"/>
 
+                <UpdateFuel :teamsId="teamsId" @snackBarEmit="openSnackbar"/>
+
                 <UpdateTime @snackBarEmit="openSnackbar"/>
 
                 <RevealPassword :teamsId="teamsId" @snackBarEmit="openSnackbar"/>
@@ -49,6 +51,7 @@
 <script setup>
 import UpdateTeams from "~/components/gamePage/editGame/UpdateTeams.vue";
 import UpdateScore from "~/components/gamePage/editGame/UpdateScore.vue";
+import UpdateFuel from "~/components/gamePage/editGame/UpdateFuel.vue";
 import UpdateTime from "~/components/gamePage/editGame/UpdateTime.vue";
 import RevealPassword from "./RevealPassword.vue";
 import InputPassword from "./InputPassword.vue";
