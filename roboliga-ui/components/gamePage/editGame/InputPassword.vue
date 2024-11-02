@@ -2,7 +2,7 @@
     <v-row justify="center" align="center">
         <v-col cols="12" md="4">
             <v-btn color="primary" variant="text" @click="promptPassword">
-                Enter Game Password
+                Add to "Your games"
             </v-btn>
         </v-col>
     </v-row>

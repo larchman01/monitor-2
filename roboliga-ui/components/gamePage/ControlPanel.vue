@@ -21,7 +21,7 @@
         </v-btn>
 
         <v-btn @click="toggleCoordinates" variant="text" color="primary">
-            {{ showCoordinates ? 'Hide Coordinates' : 'Show Coordinates' }}
+            {{ showCoordinates ? 'Hide' : 'Debug' }}
         </v-btn>
     </v-col>
 

@@ -100,41 +100,49 @@ function CanvasManager(w, h) {
         // Draw the cube
         context.fillRect(-75 * scale, -75 * scale, 150 * scale, 150 * scale);
         // Draw the border around the cube
-        context.strokeStyle = 'black';
+        context.strokeStyle = 'white';
         context.lineWidth = 1;
         context.strokeRect(-75 * scale, -75 * scale, 150 * scale, 150 * scale);
         // Restore the canvas context state
         context.restore();
     }
     this.drawRobot = (key) => {
-        const robot = props.gameState.robots[key]
+    const robot = props.gameState.robots[key]
 
-        const context = this.ctx;
-        const scale = this.scale;
+    const context = this.ctx;
+    const scale = this.scale;
 
-        const {x, y} = robot.position
-        const dir = robot.dir
-        const shorterLength = 150 * scale
-        const longerLength = 270 * scale
+    const {x, y} = robot.position
+    const dir = robot.dir
+    const shorterLength = 150 * scale
+    const longerLength = 270 * scale
 
-        // Save the canvas context state, so we can restore it later
+    // Save the canvas context state, so we can restore it later
+    context.save();
+    // Set the robot color
+    context.fillStyle = props.gameState.teams[key] && props.gameState.teams[key].color || this.colors.box;
+
+    context.translate(x * scale, y * scale)
+    context.rotate(((dir - 90) * Math.PI) / 180)
+    context.beginPath()
+    context.moveTo(-shorterLength / 2, longerLength / 3)
+    context.lineTo(shorterLength / 2, longerLength / 3)
+    context.lineTo(longerLength / 2, -longerLength / 3)
+    context.lineTo(-longerLength / 2, -longerLength / 3)
+    context.closePath()
+    context.fill()
+
+    // Restore the canvas context state
+    context.restore();
+
+    if (props.showCoordinates) {
         context.save();
-        // Set the robot color
-        context.fillStyle = props.gameState.teams[key] && props.gameState.teams[key].color || this.colors.box;
-
-        context.translate(x * scale, y * scale)
-        context.rotate(((dir - 90) * Math.PI) / 180)
-        context.beginPath()
-        context.moveTo(-shorterLength / 2, longerLength / 3)
-        context.lineTo(shorterLength / 2, longerLength / 3)
-        context.lineTo(longerLength / 2, -longerLength / 3)
-        context.lineTo(-longerLength / 2, -longerLength / 3)
-        context.closePath()
-        context.fill()
-
-        // Restore the canvas context state
+        context.fillStyle = 'black';
+        context.font = '12px Arial';
+        context.fillText(`Dir: ${dir.toFixed(4)}`, (x + 10) * scale, (y - 10) * scale); // Round to two decimal places in the text
         context.restore();
     }
+}
 }
 
 let manager = new CanvasManager(size.w, size.h);
