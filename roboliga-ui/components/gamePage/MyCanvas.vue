@@ -7,7 +7,7 @@
 </template>
 
 <script setup>
-const props = defineProps(['gameState', 'canvasWidth', 'showCoordinates'])
+const props = defineProps(['gameState', 'canvasWidth', 'showCoordinates', 'game_paused', 'game_on'])
 import config from "~/config.json"
 
 const myCanvas = ref(null);
@@ -163,6 +163,10 @@ function draw() {
     for (let key in props.gameState.robots) {
         manager.drawRobot(key);
     }
+
+    if (props.game_on && props.game_paused) {
+        drawPausedText();
+    }
 }
 
 function handleCanvasClick(event) {
@@ -199,6 +203,16 @@ function handleMouseMove(event) {
         y: event.clientY,
         text: `X: ${x}, Y: ${y}`
     };
+}
+
+function drawPausedText() {
+    const context = manager.ctx;
+    context.save();
+    context.font = 'bold 48px Arial';
+    context.fillStyle = 'rgba(255, 0, 0, 0.7)';
+    context.textAlign = 'center';
+    context.fillText('Game Paused', manager.w / 2, manager.h / 2);
+    context.restore();
 }
 
 onMounted(() => {

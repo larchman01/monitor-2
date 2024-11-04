@@ -4,7 +4,7 @@
             {{ !game_on ? 'Start' : 'Stop' }}
         </v-btn>
 
-        <v-btn @click="playPause" variant="text" color="primary">
+        <v-btn @click="playPause" variant="text" color="primary" :disabled="!game_on" class="play-pause-btn">
             {{ game_paused ? 'Play' : 'Pause' }}
         </v-btn>
 
@@ -50,7 +50,7 @@ const {$promptPassword} = useNuxtApp()
 const auth = useAuthStore()
 const baseApiUrl = useRuntimeConfig().public.baseApiUrl
 const props = defineProps(['game_on', 'game_paused', 'teamsId', 'showCoordinates'])
-const emit = defineEmits(['update:showCoordinates'])
+const emit = defineEmits(['update:showCoordinates', 'gameStateChange', 'update:game_paused'])
 const {gameId} = useRoute().params
 let dialog = ref(false)
 
@@ -77,6 +77,11 @@ const startStop = async () => {
             snackbar.value = true
             snackbarText.value = `Error ${props.game_on ? 'stopping' : 'starting'} the game`
         }
+    } else {
+        emit('gameStateChange', !props.game_on);
+        if (!props.game_on) {
+            emit('update:game_paused', false);
+        }
     }
 }
 
@@ -98,6 +103,8 @@ const playPause = async () => {
             snackbar.value = true
             snackbarText.value = `Error ${props.game_paused ? 'resuming' : 'pausing'} the game`
         }
+    } else {
+        emit('update:game_paused', !props.game_paused);
     }
 }
 
@@ -107,4 +114,7 @@ const toggleCoordinates = () => {
 </script>
 
 <style scoped>
+.play-pause-btn:disabled {
+    color: grey;
+}
 </style>

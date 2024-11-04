@@ -6,7 +6,10 @@
                    color="primary" size="x-large" density="compact" :ripple="false" @click="navigateTo('/')"></v-btn>
 
             <ControlPanel :game_on="gameState.game_on" :game_paused="gameState.game_paused"
-                          :teamsId="[teamBlueId,teamRedId]" :showCoordinates="showCoordinates" @update:showCoordinates="showCoordinates = $event"></ControlPanel>
+                          :teamsId="[teamBlueId,teamRedId]" :showCoordinates="showCoordinates" 
+                          @update:showCoordinates="showCoordinates = $event" 
+                          @gameStateChange="handleGameStateChange"
+                          @update:game_paused="gameState.game_paused = $event"></ControlPanel>
         </v-row>
 
         <v-row justify="center" align="center" no-gutters>
@@ -27,7 +30,7 @@
         <v-row justify="center" align="center">
             <v-col cols="10">
                 <div ref="canvasDiv" class="text-center">
-                    <MyCanvas :gameState="gameState" :canvasWidth="canvasWidth" :showCoordinates="showCoordinates"/>
+                    <MyCanvas :gameState="gameState" :canvasWidth="canvasWidth" :showCoordinates="showCoordinates" :game_paused="gameState.game_paused" :game_on="gameState.game_on"/>
                 </div>
             </v-col>
         </v-row>
@@ -131,15 +134,38 @@ let canvasWidth = ref(600)
 let showCoordinates = ref(false)
 
 let intervalId;
-onMounted(() => {
 
+const setRefreshInterval = () => {
+    clearInterval(intervalId);
+    const intervalTime = gameState.value.game_on ? 100 : 2000;
     intervalId = setInterval(() => {
         canvasWidth.value = canvasDiv.value.clientWidth
         canvasWidth.value = Math.min(canvasWidth.value, window.innerHeight)
         refresh()
         updateTeams()
-    }, 100);
+    }, intervalTime);
 
+    // Immediately refresh and update teams
+    canvasWidth.value = canvasDiv.value.clientWidth
+    canvasWidth.value = Math.min(canvasWidth.value, window.innerHeight)
+    refresh()
+    updateTeams()
+}
+
+const handleGameStateChange = (isGameOn) => {
+    gameState.value.game_on = isGameOn;
+    if (isGameOn) {
+        gameState.value.game_paused = false;
+    }
+    setRefreshInterval();
+}
+
+onMounted(() => {
+    setRefreshInterval();
+})
+
+watch(() => gameState.value.game_on, () => {
+    setRefreshInterval();
 })
 
 onUnmounted(() => {
@@ -147,7 +173,3 @@ onUnmounted(() => {
 })
 
 </script>
-
-<style scoped>
-
-</style>
