@@ -118,8 +118,8 @@ const valid = ref(false)
 const inputForm = ref(null)
 
 async function create() {
-    console.log(blueTeam.value)
-    console.log(redTeam.value)
+    //console.log(blueTeam.value)
+    //console.log(redTeam.value)
 
     const {valid} = await inputForm.value.validate()
     if (valid) {

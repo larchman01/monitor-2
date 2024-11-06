@@ -30,12 +30,11 @@
         <v-row justify="center" align="center">
             <v-col cols="10">
                 <div ref="canvasDiv" class="text-center">
-                    <MyCanvas :gameState="gameState" :canvasWidth="canvasWidth" :showCoordinates="showCoordinates" :game_paused="gameState.game_paused" :game_on="gameState.game_on"/>
+                    <MyCanvas :gameState="gameState" :canvasWidth="canvasWidth" :showCoordinates="showCoordinates" :game_paused="gameState.game_paused" :game_on="gameState.game_on" :objectTypes="objectTypes"/>
                 </div>
             </v-col>
         </v-row>
     </v-container>
-
 </template>
 
 <script setup>
@@ -44,9 +43,12 @@ import Clock from "~/components/gamePage/Clock.vue";
 import Score from "~/components/gamePage/Score.vue";
 import MyCanvas from "~/components/gamePage/MyCanvas.vue";
 import {navigateTo} from "#app";
+import { useAuthStore } from "~/stores/auth";
 
 const {gameId} = useRoute().params
 const baseApiUrl = useRuntimeConfig().public.baseApiUrl
+const auth = useAuthStore();
+const { $promptPassword } = useNuxtApp();
 
 let iterBlue = ref(0)
 let iterRed = ref(0)
@@ -58,6 +60,31 @@ const {data: gameState, refresh} = await useFetch(baseApiUrl + `/game/${gameId}`
 if (!gameState.value) {
     throw createError({statusCode: 404, statusMessage: 'Game does not exist!', fatal: true})
 }
+
+let objectTypes = ref(null);
+
+const fetchObjectTypes = async () => {
+  const password = auth.getPass(gameId);
+  const { data, error } = await useFetch(baseApiUrl + `/game/objects`, {
+    method: "GET",
+    headers: {
+      Authorization: "Basic " + btoa(`${gameId}:${password}`),
+    },
+  });
+
+  if (error.value) {
+    const errorMessage = error.value.message || error.value.toString();
+    const statusMatch = errorMessage.match(/: (\d{3}) /);
+    const status = statusMatch ? parseInt(statusMatch[1], 10) : null;
+    if (status === 401) {
+        console.error("You do not own this game - object types are unavailable.");
+    }
+  } else {
+    objectTypes.value = data.value;
+  }
+};
+
+await fetchObjectTypes();
 
 let prevBlue = {
     id: 0,
@@ -77,7 +104,6 @@ const teamBlueId = ref(Object.values(gameState.value.teams).find(t => t.color ==
 const teamRedId = ref(Object.values(gameState.value.teams).find(t => t.color === 'red').id)
 
 const updateTeams = () => {
-
     const btI = Object.values(gameState.value.teams).find(t => t.color === 'blue')
     const rtI = Object.values(gameState.value.teams).find(t => t.color === 'red')
 

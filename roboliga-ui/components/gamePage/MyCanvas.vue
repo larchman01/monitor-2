@@ -7,7 +7,7 @@
 </template>
 
 <script setup>
-const props = defineProps(['gameState', 'canvasWidth', 'showCoordinates', 'game_paused', 'game_on'])
+const props = defineProps(['gameState', 'canvasWidth', 'showCoordinates', 'game_paused', 'game_on', 'objectTypes'])
 import config from "~/config.json"
 
 const myCanvas = ref(null);
@@ -91,18 +91,15 @@ function CanvasManager(w, h) {
         const scale = this.scale;
         // Save the canvas context state, so we can restore it later
         context.save();
-        // Set the cube color
-        context.fillStyle = cubeColors[key] || config.field_colors.undefined;
+        // Set the cube color based on its type
+        const color = cubeColors[key];
+        context.fillStyle = color;
         // Translate the canvas context to the center of the cube
         context.translate(cube.position.x * scale, cube.position.y * scale);
         // Rotate the canvas context by the cube's direction in degrees
         context.rotate(cube.dir * Math.PI / 180);
         // Draw the cube
         context.fillRect(-75 * scale, -75 * scale, 150 * scale, 150 * scale);
-        // Draw the border around the cube
-        context.strokeStyle = 'white';
-        context.lineWidth = 1;
-        context.strokeRect(-75 * scale, -75 * scale, 150 * scale, 150 * scale);
         // Restore the canvas context state
         context.restore();
     }
@@ -178,9 +175,9 @@ function handleCanvasClick(event) {
         const cube = props.gameState.objects[key];
         if (x >= cube.position.x - 50 && x <= cube.position.x + 50 &&
             y >= cube.position.y - 50 && y <= cube.position.y + 50) {
-            toggleCubeColor(key);
-            draw();
-            break;
+                //toggleCubeColor(key);
+                //draw();
+                break;
         }
     }
 }
@@ -217,6 +214,25 @@ function drawPausedText() {
 
 onMounted(() => {
     manager.setContext(myCanvas.value.getContext('2d'));
+    // Initialize cube colors
+    for (let key in props.gameState.objects) {
+        const type = props.objectTypes ? props.objectTypes[key] : null;
+        let color;
+        switch (type) {
+            case 'plastic':
+                color = '#1565C0';
+                break;
+            case 'glass':
+                color = 'green';
+                break;
+            case 'shells':
+                color = 'red';
+                break;
+            default:
+                color = config.field_colors.undefined;
+        }
+        cubeColors[key] = color;
+    }
     draw();
 });
 onUpdated(() => {
