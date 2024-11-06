@@ -7,6 +7,8 @@
                 </v-toolbar-title>
                 <v-btn style="position: absolute; right: 0;" icon="mdi-delete-forever-outline" variant="text"
                        density="compact" color="grey-darken-2" @click.prevent="openDeleteDialog"></v-btn>
+                <v-btn style="position: absolute; right: 50px;" variant="text"
+                       density="compact" color="primary" @click.prevent="toggleGameState">{{ gameStateText }}</v-btn>
             </v-toolbar>
         </v-card-title>
         <v-card-text v-if="gameState && gameState.teams">
@@ -54,12 +56,13 @@ const deleteDialog = ref(false)
 const gameState = ref(null)
 const teamBlueId = ref(null)
 const teamRedId = ref(null)
+const gameStateText = ref("")
 
 const fetchGameState = async (retries = 5, delay = 1000) => {
     for (let attempt = 1; attempt <= retries; attempt++) {
         const {data, error} = await useFetch(baseApiUrl + `/game/${props.gameId}`, {
             method: 'GET',
-            pick: ["teams"]
+            pick: ["teams", "game_on"]
         })
 
         if (error.value) {
@@ -78,6 +81,7 @@ const fetchGameState = async (retries = 5, delay = 1000) => {
                 teamBlueId.value = Object.values(teams).find(t => t.color === 'blue')?.id
                 teamRedId.value = Object.values(teams).find(t => t.color === 'red')?.id
             }
+            gameStateText.value = gameState.value.game_on ? "STOP" : "START"
             return
         }
 
@@ -124,6 +128,38 @@ const confirmDelete = async () => {
         snackbarText.value = "Game deleted successfully"
         snackbarColor.value = ""
         emit('gameDeleted')
+    }
+}
+
+const toggleGameState = async () => {
+    const urlText = gameState.value.game_on ? "stop" : "start"
+
+    const {error} = await useFetch(baseApiUrl + `/game/${urlText}`, {
+        method: 'put',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic ' + btoa(`${props.gameId}:${auth.getPass(props.gameId)}`)
+        },
+    });
+
+    if (error.value) {
+        const errorMessage = error.value.message || error.value.toString()
+        const statusMatch = errorMessage.match(/: (\d{3}) /)
+        const status = statusMatch ? parseInt(statusMatch[1], 10) : null
+        if (status === 401) {
+            $promptPassword(props.gameId)
+        } else {
+            snackbar.value = true
+            snackbarText.value = `Error ${gameState.value.game_on ? 'stopping' : 'starting'} the game`
+            snackbarColor.value = "error"
+        }
+    } else {
+        gameState.value.game_on = !gameState.value.game_on
+        gameStateText.value = gameState.value.game_on ? "STOP" : "START"
+        snackbar.value = true
+        snackbarText.value = `Game ${gameState.value.game_on ? 'started' : 'stopped'} successfully`
+        snackbarColor.value = "success"
+        fetchGameState()
     }
 }
 
