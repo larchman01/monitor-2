@@ -220,13 +220,13 @@ onMounted(() => {
         let color;
         switch (type) {
             case 'plastic':
-                color = '#1565C0';
+                color = 'red';
                 break;
             case 'glass':
                 color = 'green';
                 break;
             case 'shells':
-                color = 'red';
+                color = '#1565C0';
                 break;
             default:
                 color = config.field_colors.undefined;

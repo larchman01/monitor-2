@@ -15,7 +15,7 @@
 
                 <UpdateScore :teamsId="teamsId" @snackBarEmit="openSnackbar"/>
 
-                <UpdateFuel :teamsId="teamsId" @snackBarEmit="openSnackbar"/>
+                <!--<UpdateFuel :teamsId="teamsId" @snackBarEmit="openSnackbar"/>-->
 
                 <UpdateTime @snackBarEmit="openSnackbar"/>
 
