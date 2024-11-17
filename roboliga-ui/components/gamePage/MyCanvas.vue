@@ -7,7 +7,7 @@
 </template>
 
 <script setup>
-const props = defineProps(['gameState', 'canvasWidth', 'showCoordinates', 'game_paused', 'game_on', 'objectTypes'])
+const props = defineProps(['gameState', 'canvasWidth', 'showCoordinates', 'game_paused', 'game_on', 'objectTypes', 'timestamp'])
 import config from "~/config.json"
 
 const myCanvas = ref(null);
@@ -100,6 +100,10 @@ function CanvasManager(w, h) {
         context.rotate(cube.dir * Math.PI / 180);
         // Draw the cube
         context.fillRect(-75 * scale, -75 * scale, 150 * scale, 150 * scale);
+        // Draw border around the cube
+        context.strokeStyle = 'black';
+        context.lineWidth = 1;
+        context.strokeRect(-75 * scale, -75 * scale, 150 * scale, 150 * scale);
         // Restore the canvas context state
         context.restore();
     }
@@ -164,6 +168,10 @@ function draw() {
     if (props.game_on && props.game_paused) {
         drawPausedText();
     }
+
+    if (props.showCoordinates) {
+        drawTimestamp();
+    }
 }
 
 function handleCanvasClick(event) {
@@ -209,6 +217,16 @@ function drawPausedText() {
     context.fillStyle = 'rgba(255, 0, 0, 0.7)';
     context.textAlign = 'center';
     context.fillText('Game Paused', manager.w / 2, manager.h / 2);
+    context.restore();
+}
+
+function drawTimestamp() {
+    const context = manager.ctx;
+    context.save();
+    context.font = '12px Arial';
+    context.fillStyle = 'black';
+    context.textAlign = 'left';
+    context.fillText(`Timestamp: ${props.timestamp}`, 10, manager.h - 10);
     context.restore();
 }
 

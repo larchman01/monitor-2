@@ -30,7 +30,7 @@
         <v-row justify="center" align="center">
             <v-col cols="10">
                 <div ref="canvasDiv" class="text-center">
-                    <MyCanvas :gameState="gameState" :canvasWidth="canvasWidth" :showCoordinates="showCoordinates" :game_paused="gameState.game_paused" :game_on="gameState.game_on" :objectTypes="objectTypes"/>
+                    <MyCanvas :gameState="gameState" :canvasWidth="canvasWidth" :showCoordinates="showCoordinates" :game_paused="gameState.game_paused" :game_on="gameState.game_on" :objectTypes="objectTypes" :timestamp="gameState.timestamp"/>
                 </div>
             </v-col>
         </v-row>
