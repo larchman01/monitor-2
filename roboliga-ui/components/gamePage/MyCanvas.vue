@@ -7,7 +7,7 @@
 </template>
 
 <script setup>
-const props = defineProps(['gameState', 'canvasWidth', 'showCoordinates', 'game_paused', 'game_on', 'objectTypes', 'timestamp'])
+const props = defineProps(['gameState', 'canvasWidth', 'showCoordinates', 'game_paused', 'game_on', 'objectTypes', 'delay'])
 import config from "~/config.json"
 
 const myCanvas = ref(null);
@@ -170,7 +170,7 @@ function draw() {
     }
 
     if (props.showCoordinates) {
-        drawTimestamp();
+        drawDelay();
     }
 }
 
@@ -220,13 +220,13 @@ function drawPausedText() {
     context.restore();
 }
 
-function drawTimestamp() {
+function drawDelay() {
     const context = manager.ctx;
     context.save();
     context.font = '12px Arial';
     context.fillStyle = 'black';
     context.textAlign = 'left';
-    context.fillText(`Timestamp: ${props.timestamp}`, 10, manager.h - 10);
+    context.fillText(`Delay: ${props.delay}`, 10, manager.h - 10);
     context.restore();
 }
 
