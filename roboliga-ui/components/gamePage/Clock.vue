@@ -8,8 +8,9 @@
 const props = defineProps(['timeLeft'])
 
 const timeLeft = computed(() => {
-    const minutes = Math.floor(props.timeLeft / 60);
-    const seconds = Math.floor(props.timeLeft - (minutes * 60));
+    var timeLeft = Math.ceil(props.timeLeft);
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = Math.floor(timeLeft % 60);
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 })
 

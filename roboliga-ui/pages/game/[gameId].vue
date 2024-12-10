@@ -194,6 +194,10 @@ watch(() => gameState.value.game_on, () => {
     setRefreshInterval();
 })
 
+watch(() => gameState.value.time_left, (newTimeLeft) => {
+    gameState.value.time_left = newTimeLeft;
+})
+
 onUnmounted(() => {
     clearInterval(intervalId)
 })
